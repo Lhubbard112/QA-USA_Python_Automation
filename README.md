@@ -1,2 +1,2 @@
-# QA-USA-Python_Automation
+# QA-USA_Python_Automation
 Project 7
