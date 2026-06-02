@@ -1,5 +1,3 @@
-from selenium.webdriver.chrome import webdriver
-
 import data
 import helpers
 
@@ -64,11 +62,18 @@ class TestUrbanRoutes:
        print("function created for car search model appears")
        pass
 
+   @classmethod
+   def setup_class(cls):
+       def setup(self):
+           if helpers.is_url_reachable(URL):
+       # do not modify - we need additional logging enabled in order to retrieve phone confirmation code
+       from selenium.webdriver import DesiredCapabilities
+       capabilities = DesiredCapabilities.CHROME
+       capabilities["goog:loggingPrefs"] = {'performance': 'ALL'}
+       cls.chrome = webdriver.Chrome()
+       cls.driver = cls.chrome
 
-@classmethod
-def setup_class(cls):
-    # do not modify - we need additional logging enabled in order to retrieve phone confirmation code
-    from selenium.webdriver import DesiredCapabilities
-    capabilities = DesiredCapabilities.CHROME
-    capabilities["goog:loggingPrefs"] = {'performance': 'ALL'}
-    cls.driver = webdriver.Chrome()
+       @classmethod
+       def teardown_class(cls):
+           cls.quit = cls.driver.quit()
+
