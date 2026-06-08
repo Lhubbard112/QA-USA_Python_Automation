@@ -2,6 +2,7 @@ from selenium import webdriver
 from pages import UrbanRoutesPage
 import data
 import helpers
+import time
 
 
 class TestUrbanRoutes:
@@ -22,97 +23,134 @@ class TestUrbanRoutes:
     def test_set_route(self):
         self.driver.get(data.URBAN_ROUTES_URL)
 
-        self.routes_page = UrbanRoutesPage(self.driver)
+        routes_page = UrbanRoutesPage(self.driver)
 
-        self.routes_page.set_from(data.ADDRESS_FROM)
-        self.routes_page.set_to(data.ADDRESS_TO)
+        routes_page.set_from(data.ADDRESS_FROM)
+        routes_page.set_to(data.ADDRESS_TO)
 
-        assert self.routes_page.get_from_field_value() == data.ADDRESS_FROM
-        assert self.routes_page.get_to_field_value() == data.ADDRESS_TO
+        assert routes_page.get_from_field_value() == data.ADDRESS_FROM
+        assert routes_page.get_to_field_value() == data.ADDRESS_TO
 
     def test_select_plan(self):
         self.driver.get(data.URBAN_ROUTES_URL)
-
-        self.routes_page = UrbanRoutesPage(self.driver)
-
-        self.routes_page.click_call_taxi_button()
-
-        assert self.routes_page.is_call_taxi_selected()
+        routes_page = UrbanRoutesPage(self.driver)
+        routes_page.set_from(data.ADDRESS_FROM)
+        routes_page.set_to(data.ADDRESS_TO)
+        time.sleep(1)
+        routes_page.click_call_taxi_button()
+        routes_page.click_supportive_plan()
+        assert routes_page.is_supportive_plan_selected()
 
     def test_fill_phone_number(self):
         self.driver.get(data.URBAN_ROUTES_URL)
-
-        self.routes_page = UrbanRoutesPage(self.driver)
-
-        self.routes_page.set_phone_number(data.PHONE_NUMBER)
-
-        assert self.routes_page.is_phone_number_selected()
+        routes_page = UrbanRoutesPage(self.driver)
+        routes_page.set_from(data.ADDRESS_FROM)
+        routes_page.set_to(data.ADDRESS_TO)
+        time.sleep(1)
+        routes_page.click_call_taxi_button()
+        routes_page.click_supportive_plan()
+        routes_page.click_phone_number_button()
+        routes_page.set_phone_input(data.PHONE_NUMBER)
+        routes_page.click_next_button()
+        time.sleep(1)
+        code = helpers.retrieve_phone_code(self.driver)
+        routes_page.set_phone_code_input(code)
+        routes_page.click_confirm_button()
+        expected_value = data.PHONE_NUMBER
+        actual_value = routes_page.get_phone_number_entered()
+        assert expected_value == actual_value
 
     def test_fill_card(self):
         self.driver.get(data.URBAN_ROUTES_URL)
-
-        self.routes_page = UrbanRoutesPage(self.driver)
-
-        self.routes_page.set_credit_card(data.CARD_NUMBER)
-
-        assert self.routes_page.is_credit_card_selected()
+        routes_page = UrbanRoutesPage(self.driver)
+        routes_page.set_from(data.ADDRESS_FROM)
+        routes_page.set_to(data.ADDRESS_TO)
+        time.sleep(1)
+        routes_page.click_call_taxi_button()
+        routes_page.click_supportive_plan()
+        routes_page.click_payment_method()
+        routes_page.click_add_card()
+        time.sleep(1)
+        routes_page.set_card_number(data.CARD_NUMBER)
+        routes_page.set_card_code(data.CARD_CODE)
+        time.sleep(5)
+        routes_page.click_link_button()
+        expected_value = data.CARD_NUMBER
+        actual_value = routes_page.get_credit_card_entered()
+        assert expected_value == actual_value
 
     def test_comment_for_driver(self):
         self.driver.get(data.URBAN_ROUTES_URL)
-
-        self.routes_page = UrbanRoutesPage(self.driver)
-
-        self.routes_page.set_comment_for_driver(data.MESSAGE_FOR_DRIVER)
-
-        actual_comment = self.routes_page.get_comment_for_driver()
-
+        routes_page = UrbanRoutesPage(self.driver)
+        routes_page.set_from(data.ADDRESS_FROM)
+        routes_page.set_to(data.ADDRESS_TO)
+        time.sleep(1)
+        routes_page.click_call_taxi_button()
+        routes_page.click_supportive_plan()
+        routes_page.set_comment_for_driver(data.MESSAGE_FOR_DRIVER)
+        routes_page.get_comment_for_driver()
+        expected_value = data.MESSAGE_FOR_DRIVER
+        actual_comment = routes_page.get_comment_for_driver()
         assert actual_comment == data.MESSAGE_FOR_DRIVER
 
     def test_order_blanket_and_handkerchiefs(self):
         self.driver.get(data.URBAN_ROUTES_URL)
+        routes_page = UrbanRoutesPage(self.driver)
+        routes_page.set_from(data.ADDRESS_FROM)
+        routes_page.set_to(data.ADDRESS_TO)
+        time.sleep(1)
+        routes_page.click_call_taxi_button()
+        routes_page.click_supportive_plan()
+        routes_page.click_order_requirements()
+        time.sleep(2)
+        routes_page.click_blanket_and_handkerchiefs()
+        assert routes_page.is_blanket_and_handkerchiefs_selected()
 
-        self.routes_page = UrbanRoutesPage(self.driver)
-
-        self.routes_page.click_blanket_and_handkerchiefs()
-
-        assert self.routes_page.is_blanket_and_handkerchiefs_selected()
-
-    def test_order_2_ice_creams(self):
+    def test_order_2_ice_cream(self):
         self.driver.get(data.URBAN_ROUTES_URL)
-
-        self.routes_page = UrbanRoutesPage(self.driver)
-
-        self.routes_page.add_ice_cream()
-
-        assert self.routes_page.get_ice_cream_count() == "2"
+        routes_page = UrbanRoutesPage(self.driver)
+        routes_page.set_from(data.ADDRESS_FROM)
+        routes_page.set_to(data.ADDRESS_TO)
+        time.sleep(1)
+        routes_page.click_call_taxi_button()
+        routes_page.click_supportive_plan()
+        time.sleep(2)
+        ice_creams=2
+        for i in range(ice_creams):
+            routes_page.click_add_ice_cream()
+        assert routes_page.get_ice_cream_count() == "2"
 
     def test_car_search_modal_appears(self):
         self.driver.get(data.URBAN_ROUTES_URL)
-
-        self.routes_page = UrbanRoutesPage(self.driver)
-
-        self.routes_page.set_from(data.ADDRESS_FROM)
-        self.routes_page.set_to(data.ADDRESS_TO)
-
-        self.routes_page.click_call_taxi_button()
-
-        self.routes_page.set_phone_number(data.PHONE_NUMBER)
-        self.routes_page.set_credit_card(data.CARD_NUMBER)
-
-        self.routes_page.set_comment_for_driver(data.MESSAGE_FOR_DRIVER)
-
-        self.routes_page.click_blanket_and_handkerchiefs()
-
-        self.routes_page.add_ice_cream()
-
-        assert self.routes_page.is_modal_displayed()
-        assert self.routes_page.get_from_field_value() == data.ADDRESS_FROM
-        assert self.routes_page.get_to_field_value() == data.ADDRESS_TO
-        assert self.routes_page.is_supportive_plan_selected() is True
-        assert self.routes_page.is_call_taxi_selected() is True
-        assert self.routes_page.is_credit_card_selected() is True
-        assert self.routes_page.is_phone_number_selected() is True
-        assert self.routes_page.is_blanket_and_handkerchiefs_selected() is True
+        routes_page = UrbanRoutesPage(self.driver)
+        routes_page.set_from(data.ADDRESS_FROM)
+        routes_page.set_to(data.ADDRESS_TO)
+        time.sleep(1)
+        routes_page.click_call_taxi_button()
+        routes_page.click_supportive_plan()
+        routes_page.click_phone_number_button()
+        routes_page.set_phone_input(data.PHONE_NUMBER)
+        routes_page.click_next_button()
+        time.sleep(1)
+        code = helpers.retrieve_phone_code(self.driver)
+        routes_page.set_phone_code_input(code)
+        routes_page.click_confirm_button()
+        routes_page.click_payment_method()
+        routes_page.click_add_card()
+        time.sleep(1)
+        routes_page.set_card_number(data.CARD_NUMBER)
+        routes_page.set_card_code(data.CARD_CODE)
+        time.sleep(5)
+        routes_page.click_link_button()
+        routes_page.click_close_button()
+        routes_page.set_comment_for_driver(data.MESSAGE_FOR_DRIVER)
+        time.sleep(2)
+        routes_page.click_blanket_and_handkerchiefs()
+        ice_creams = 2
+        for i in range(ice_creams):
+            routes_page.click_add_ice_cream()
+        routes_page.click_smart_button()
+        assert routes_page.is_modal_displayed()
 
     @classmethod
     def teardown_class(cls):
