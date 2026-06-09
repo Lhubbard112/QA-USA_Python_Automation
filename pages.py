@@ -10,7 +10,7 @@ class UrbanRoutesPage:
     TO_FIELD = (By.ID, "to")
     CALL_TAXI_BUTTON = (By.XPATH, "//button[text()='Call a taxi']")
     SUPPORTIVE_PLAN = (By.XPATH, "//div[text()='Supportive']")
-    PHONE_NUMBER_BUTTON = (By.XPATH, "//div[@class='np-button'] //div[text()='Phone number']")
+    PHONE_NUMBER_BUTTON = (By.CSS_SELECTOR, '.np-button .np-text')
     CREDIT_CARD_BUTTON = (By.XPATH, "//div[text()='Credit Card']")
     PHONE_INPUT = (By.ID, "phone")
     PHONE_CODE_INPUT = (By.ID, "code")
@@ -33,6 +33,8 @@ class UrbanRoutesPage:
     PAYMENT_METHOD = (By.XPATH, "//div[contains(@class, 'pp-text') and contains(text(), 'Payment method')]")
     BLANKET_CHECKBOX = (By.XPATH,"//input[@type='checkbox' and ancestor::div[contains(., 'Blanket and handkerchiefs')]]")
     CLOSE_BUTTON = (By.XPATH, '//div[@class="payment-picker open"]//button[@class="close-button section-close"]')
+    ACTIVE_PLAN = (By.XPATH, '//div[@class="tcard active"]//div[@class="tcard-title" and text()="Supportive"]')
+    NEW_PAYMENT_METHOD = (By.XPATH, '//div[@class="pp-title" and text()="Card"]')
 
 
     def __init__(self, driver):
@@ -40,11 +42,11 @@ class UrbanRoutesPage:
 
 
     def set_from(self, value):
-        return self.driver.find_element(*self.FROM_FIELD).send_keys(value)
+         self.driver.find_element(*self.FROM_FIELD).send_keys(value)
 
 
     def set_to(self, value):
-        return self.driver.find_element(*self.TO_FIELD).send_keys(value)
+         self.driver.find_element(*self.TO_FIELD).send_keys(value)
 
     def click_call_taxi_button(self):
         self.driver.find_element(*self.CALL_TAXI_BUTTON).click()
@@ -78,10 +80,6 @@ class UrbanRoutesPage:
     def click_add_ice_cream(self):
         element = self.driver.find_element(*self.ICE_CREAM_BUTTON)
 
-        print("Displayed:", element.is_displayed())
-        print("Enabled:", element.is_enabled())
-        print(element.get_attribute("outerHTML"))
-
         element.click()
 
 
@@ -100,26 +98,17 @@ class UrbanRoutesPage:
         return self.driver.find_element(*self.ICE_CREAM_COUNTER).text
 
 
-    def is_call_taxi_selected(self):
-        return self.driver.find_element(*self.CALL_TAXI_BUTTON).is_displayed()
-
-
     def is_supportive_plan_selected(self):
-        return self.driver.find_element(*self.SUPPORTIVE_PLAN).is_displayed()
-
+        return self.driver.find_element(*self.ACTIVE_PLAN).text
 
     def get_phone_number_entered(self):
-        return self.driver.find_element(*self.PHONE_INPUT).get_attribute("value")
-
+        return self.driver.find_element(*self.PHONE_NUMBER_BUTTON).text
 
     def is_credit_card_selected(self):
-        return self.driver.find_element(*self.CARD_NUMBER).is_displayed()
+        return self.driver.find_element(*self.NEW_PAYMENT_METHOD).text
 
     def is_blanket_and_handkerchiefs_selected(self):
         checkbox = self.driver.find_element(*self.BLANKET_CHECKBOX)
-
-        print("checked =", checkbox.get_property("checked"))
-        print("selected =", checkbox.is_selected())
 
         return checkbox.get_property("checked")
 
@@ -134,10 +123,6 @@ class UrbanRoutesPage:
 
     def set_phone_code_input(self, code):
         self.driver.find_element(*self.PHONE_CODE_INPUT).send_keys(code)
-
-
-    #def get_phone_number(self):
-        #return self.driver.find_element(*self.PHONE_NUMBER_DISPLAY).get_attribute('value')
 
     def set_card_number(self, card_number):
         field = self.driver.find_element(*self.CARD_NUMBER)
@@ -174,8 +159,6 @@ class UrbanRoutesPage:
     def get_credit_card(self):
         self.driver.find_element(*self.CREDIT_CARD_BUTTON).get_attribute("value")
 
-    #def set_card_code(self, card_code):
-        self.driver.find_element(*self.CARD_CODE).send_keys()
 
     def set_card_code(self, card_code):
         fields = self.driver.find_elements(*self.CARD_CODE)
@@ -188,7 +171,7 @@ class UrbanRoutesPage:
         raise Exception("No visible card code field found")
 
     def get_credit_card_entered(self):
-        return self.driver.find_element(*self.CARD_NUMBER).get_attribute("value")
+        return self.driver.find_element(*self.NEW_PAYMENT_METHOD).text
 
     def get_credit_card_code_entered(self):
         return self.driver.find_element(*self.CARD_CODE).get_attribute("value")
@@ -199,16 +182,6 @@ class UrbanRoutesPage:
     def click_blanket_and_handkerchiefs(self):
         elements = self.driver.find_elements(*self.BLANKET_AND_HANDKERCHIEFS)
 
-        print("Matches found:", len(elements))
-
-        for i, element in enumerate(elements):
-            print(
-                f"Element {i}:",
-                "text=", repr(element.text),
-                "displayed=", element.is_displayed(),
-                "location=", element.location,
-                "size=", element.size
-            )
 
     def click_ice_cream_counter(self):
         self.driver.find_element(*self.ICE_CREAM_COUNTER).click()

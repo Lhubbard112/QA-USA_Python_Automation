@@ -39,7 +39,7 @@ class TestUrbanRoutes:
         time.sleep(1)
         routes_page.click_call_taxi_button()
         routes_page.click_supportive_plan()
-        assert routes_page.is_supportive_plan_selected()
+        assert routes_page.is_supportive_plan_selected() == "Supportive"
 
     def test_fill_phone_number(self):
         self.driver.get(data.URBAN_ROUTES_URL)
@@ -75,7 +75,7 @@ class TestUrbanRoutes:
         routes_page.set_card_code(data.CARD_CODE)
         time.sleep(5)
         routes_page.click_link_button()
-        expected_value = data.CARD_NUMBER
+        expected_value = "Card"
         actual_value = routes_page.get_credit_card_entered()
         assert expected_value == actual_value
 
@@ -136,8 +136,9 @@ class TestUrbanRoutes:
         routes_page.set_phone_code_input(code)
         routes_page.click_confirm_button()
         routes_page.click_payment_method()
-        routes_page.click_add_card()
         time.sleep(1)
+        routes_page.click_add_card()
+
         routes_page.set_card_number(data.CARD_NUMBER)
         routes_page.set_card_code(data.CARD_CODE)
         time.sleep(5)
